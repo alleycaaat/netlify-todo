@@ -1,84 +1,60 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react';
+import Todo from './components/Todo';
+import Form from './components/Form';
+import Title from './components/Title';
+import './App.css';
 
-function App() {
-const AddTaskForm = ({ addTask }) => {
-    const [value, setValue] = useState('');
+const initialData = [
+    {
+        _id: 0,
+        text: 'Call mom',
+    },
+    {
+        _id: 1,
+        text: 'Work out',
+    },
+    {
+        _id: 2,
+        text: 'Finish ReactJS talk',
+    },
+];
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        value && addTask(value);
-        setValue('');
+const App = () => {
+    const [inputValue, setInputValue] = useState('');
+    const [todos, setTodos] = useState(initialData);
+
+    const handleSubmit = () => {
+        if (inputValue === '') return;
+        const newTodo = { _id: Date.now(), text: inputValue };
+        setTodos([...todos, newTodo]);
+        setInputValue('');
+    };
+
+    const handleDeleteTodo = (id) => {
+        const newTodos = todos.filter((todo) => todo._id !== id);
+        setTodos(newTodos);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input
-                type='text'
-                value={value}
-                placeholder='Enter a title for this task…'
-                onChange={(e) => setValue(e.target.value)}
-            />
-            <button type='submit'>
-                <i class='fas fa-plus'></i>
-            </button>
-        </form>
-    );
-};
-
-const ToDoList = () => {
-    const [tasks, setTasks] = useState([
-        {
-            text: 'Like',
-            isCompleted: false,
-        },
-        {
-            text: 'Comment',
-            isCompleted: false,
-        },
-        {
-            text: 'Subscribe',
-            isCompleted: false,
-        },
-    ]);
-
-    const addTask = (text) => setTasks([...tasks, { text }]);
-
-    const toggleTask = (index) => {
-        const newTasks = [...tasks];
-        newTasks[index].isCompleted = !newTasks[index].isCompleted;
-        setTasks(newTasks);
-    };
-
-    const removeTask = (index) => {
-        const newTasks = [...tasks];
-        newTasks.splice(index, 1);
-        setTasks(newTasks);
-    };
-
-    return (
-        <div className='todo-list'>
-            {tasks.map((task, index) => (
-                <div className='todo'>
-                    <span
-                        onClick={() => toggleTask(index)}
-                        className={
-                            task.isCompleted
-                                ? 'todo-text todo-completed'
-                                : 'todo-text'
-                        }
-                    >
-                        {task.text}
-                    </span>
-                    <button onClick={() => removeTask(index)}>
-                        <i class='fas fa-trash-alt'></i>
-                    </button>
-                </div>
-            ))}
-            <AddTaskForm addTask={addTask} />
+        <div className='app'>
+            <div className='todolist'>
+                <Title myName='AC' />
+                <Form
+                    inputValue={inputValue}
+                    setInputValue={setInputValue}
+                    handleSubmit={handleSubmit}
+                />
+                {todos.map((todo, index) => (
+                    <Todo
+                        todo={todo}
+                        index={index}
+                        handleDeleteTodo={handleDeleteTodo}
+                        key={todo._id}
+                    />
+                ))}
+            </div>
         </div>
     );
 };
 
-}
-
-export default App
+export default App;
